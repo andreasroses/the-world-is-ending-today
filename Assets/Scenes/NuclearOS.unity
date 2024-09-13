@@ -650,16 +650,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: smolRed
       objectReference: {fileID: 0}
-    - target: {fileID: 197228130920785855, guid: ee25603b0f2486e49a7966246bea1e3e,
-        type: 3}
-      propertyPath: pieceSize.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 197228130920785855, guid: ee25603b0f2486e49a7966246bea1e3e,
-        type: 3}
-      propertyPath: pieceSize.y
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1212317980167977914, guid: ee25603b0f2486e49a7966246bea1e3e,
         type: 3}
       propertyPath: m_Pivot.x
@@ -2205,16 +2195,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3993681815644074122, guid: 695bf0cdb6f597348a3947a619041273,
-        type: 3}
-      propertyPath: pieceSize.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3993681815644074122, guid: 695bf0cdb6f597348a3947a619041273,
-        type: 3}
-      propertyPath: pieceSize.y
-      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7022673418863955539, guid: 695bf0cdb6f597348a3947a619041273,
         type: 3}
@@ -3995,21 +3975,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3354817345919582363, guid: c49123c4ee0f77047a236bddf64326e3,
         type: 3}
-      propertyPath: m_LocalScale.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3354817345919582363, guid: c49123c4ee0f77047a236bddf64326e3,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3354817345919582363, guid: c49123c4ee0f77047a236bddf64326e3,
-        type: 3}
-      propertyPath: m_LocalScale.z
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3354817345919582363, guid: c49123c4ee0f77047a236bddf64326e3,
-        type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -4067,16 +4032,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8104895923041536475, guid: c49123c4ee0f77047a236bddf64326e3,
-        type: 3}
-      propertyPath: pieceSize.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8104895923041536475, guid: c49123c4ee0f77047a236bddf64326e3,
-        type: 3}
-      propertyPath: pieceSize.y
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
