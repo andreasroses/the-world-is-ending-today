@@ -5,7 +5,8 @@ using UnityEngine.EventSystems;
 public class PuzzlePiece : MonoBehaviour , IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     private PlacementSystem placeSys;
-    private Vector2Int pieceSize;
+    [SerializeField] private Vector2Int pieceSize;
+    [System.NonSerialized]
     public bool isPlaced = false;
     private Vector3 startPos;
     [System.NonSerialized]
