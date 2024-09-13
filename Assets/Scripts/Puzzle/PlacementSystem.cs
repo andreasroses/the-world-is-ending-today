@@ -27,29 +27,28 @@ using UnityEngine;
 
 public class PlacementSystem : MonoBehaviour
 {
+    public Canvas canvas;
     [SerializeField] private Grid grid;
+    [SerializeField] private areaGridBuilder gridBuilder;
     [SerializeField] private GameObject mouseIndicator, cellIndicator;
     [SerializeField] private GridInput gridInput;
     [SerializeField] private ObjectsDatabase db;
     private int selectedObjIndex = -1;
     [SerializeField] private GameObject gridVisual;
-
+    private PuzzlePiece currPiece;
     void Start(){
         //StopPlacement();
     }
 
-    public void StartPlacement(int id, ObjectType type){
-        selectedObjIndex = db.objectsData.FindIndex(data => data.ID == id);
-        if(selectedObjIndex < 0){
-            Debug.LogError($"No ID found {id}");
-            return;
+    public void PlacePiece(Vector2Int size, Vector3 endPos){
+        Vector3Int checkPos = grid.WorldToCell(endPos);
+        List<Cell> occupiedCells;
+        if(gridBuilder.PlacedCellHere(checkPos, size, out occupiedCells)){
+            currPiece.filledCells = occupiedCells;
+            currPiece.isPlaced = true;
+            Vector3 placePos = grid.CellToWorld(checkPos);
+            currPiece.transform.position = placePos;
         }
-        gridVisual.SetActive(true);
-        cellIndicator.SetActive(true);
-    }
-    private void StopPlacement()
-    {
-        throw new NotImplementedException();
     }
 
     // Update is called once per frame
@@ -61,4 +60,10 @@ public class PlacementSystem : MonoBehaviour
         cellIndicator.transform.position = grid.CellToWorld(gridPos);
         cellIndicator.transform.SetAsLastSibling();
     }
+
+    public void SetHeldPiece(PuzzlePiece p){
+        currPiece = p;
+    }
+
+
 }

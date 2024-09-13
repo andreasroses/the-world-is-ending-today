@@ -6,6 +6,7 @@ TagManager:
   tags:
   - BrowserWindow
   - Canvas
+  - PlacementSystem
   layers:
   - Default
   - TransparentFX
