@@ -1,16 +1,19 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UIElements;
 
-public class areaGridBuilder : MonoBehaviour
+public class AreaGridBuilder : MonoBehaviour
 {
-    public UnityEvent OnPuzzleBuilt;
+    public UnityEvent<int> OnGridBuilt;
     [SerializeField] private RectTransform puzzleArea;
     [SerializeField] private Grid grid;
     [SerializeField] private ObjectPoolModified cellSprites;
+    [SerializeField] private List<PuzzleLevel> levels = new List<PuzzleLevel>();
     private List<GameObject> puzzleCells = new List<GameObject>();
     private Vector3[] puzzleBounds =  new Vector3[4];
     [System.NonSerialized]
@@ -26,7 +29,11 @@ public class areaGridBuilder : MonoBehaviour
     public int minHeight = 0;
     [System.NonSerialized]
     public int maxHeight = 0;
+    private int filledCellsReq;
+    private int currLevel = 0;
     void Awake(){
+        filledCellsReq = levels[currLevel].NumberFilledCellsRequired();
+        levels[currLevel].CollectRequiredPieces();
         puzzleArea.GetWorldCorners(puzzleBounds);
         BuildGridArray();
     }
@@ -43,7 +50,7 @@ public class areaGridBuilder : MonoBehaviour
                 areaGrid.Add(new Cell(new Vector2Int(x,y)));
             }
         }
-        OnPuzzleBuilt.Invoke();
+        OnGridBuilt.Invoke(filledCellsReq);
     }
 
     public void MakePuzzleGrid(List<Cell> markedGrid){
@@ -56,7 +63,7 @@ public class areaGridBuilder : MonoBehaviour
         }
         VisualizeAreaGrid();
     }
-    public bool PlacedCellHere(Vector3Int cellPos, Vector2Int size, out List<Cell> occupiedCells){
+    public bool PlacedCellHere(PieceItem pzlPiece,Vector3Int cellPos, Vector2Int size, float rotationAngle, out List<Cell> occupiedCells){
         Vector2Int checkPos = new Vector2Int(cellPos.x, cellPos.y);
         occupiedCells = new List<Cell>();
 
@@ -66,28 +73,44 @@ public class areaGridBuilder : MonoBehaviour
 
         Cell foundCell = GetCellFromPuzzleGrid(checkPos);
 
-        if(foundCell.filled){
+        if(foundCell.filled || neighborsSameType(foundCell, pzlPiece)){
             return false;
         }
 
         occupiedCells.Add(foundCell);
-
-        if(size == Vector2Int.one){
+        
+        Vector2Int adjustedSize = AdjustSizeForRotation(size, rotationAngle);
+        
+        if(adjustedSize == Vector2Int.one){
             foundCell.filled = true;
+            foundCell.piece = pzlPiece;
             return true;
         }
 
-        if(isSpaceAvailable(foundCell, size, out List<Cell> neighbors)){
+        if(isSpaceAvailable(foundCell, adjustedSize, out List<Cell> neighbors)){
             foundCell.filled = true;
+            foundCell.piece = pzlPiece;
             foreach (Cell c in neighbors){
                 c.filled = true;
+                c.piece = pzlPiece;
                 occupiedCells.Add(c);
             }
             return true;
         }
         return false;
     }
+    private Vector2Int AdjustSizeForRotation(Vector2Int size, float rotationAngle){
+        // Normalize the rotation to a 0, 90, 180, 270 range
+        rotationAngle = rotationAngle % 360;
 
+        // Swap width and height for 90° or 270° rotations
+        if(rotationAngle == 90 || rotationAngle == 270){
+            return new Vector2Int(size.y, size.x);
+        }
+
+        // No adjustment for 0° or 180° rotations
+        return size;
+    }
     private bool isValidCellPosition(Vector2Int cellPos){
         return puzzleGrid.Exists(puzzleCell => puzzleCell.gridPos == cellPos);
     }
@@ -109,10 +132,44 @@ public class areaGridBuilder : MonoBehaviour
         neighbors = openSpots;
         return sizePositions.Count == numUnfilled;
     }
+    private bool neighborsSameType(Cell home, PieceItem p){
+        List<Cell> neighbors = new List<Cell>();
+        Vector2Int homePos = home.gridPos;
+        Cell neighbor;
+        if(neighborCellInPuzzleGrid(new Vector2Int(homePos.x - 1, homePos.y), out neighbor)){
+            neighbors.Add(neighbor);
+        }
+        if(neighborCellInPuzzleGrid(new Vector2Int(homePos.x + 1, homePos.y), out neighbor)){
+            neighbors.Add(neighbor);
+        }
+        if (neighborCellInPuzzleGrid(new Vector2Int(homePos.x, homePos.y - 1), out neighbor)){
+            neighbors.Add(neighbor);
+        }
+            
+        if (neighborCellInPuzzleGrid(new Vector2Int(homePos.x, homePos.y + 1), out neighbor)){
+            neighbors.Add(neighbor);
+        }
+        foreach(Cell c in neighbors){
+            if(c.piece.Equals(p)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private bool neighborCellInPuzzleGrid(Vector2Int gridPos, out Cell neighbor){
+        neighbor = new(Vector2Int.zero);
+        if(isValidCellPosition(gridPos)){
+            neighbor = puzzleGrid.Find(puzzleCell => puzzleCell.gridPos == gridPos);
+            return true;
+        }
+        return false;
+    }
     private List<Vector2Int> CalculateSizePositions(Vector2Int homePos, Vector2Int size){
         List<Vector2Int> positions = new();
         for(int x = 0; x < size.x; x++){
             for(int y = 0; y < size.y; y++){
+                if(x == 0 && y == 0) continue;
                 positions.Add(homePos + new Vector2Int(x, y));
             }
         }
@@ -142,16 +199,22 @@ public class areaGridBuilder : MonoBehaviour
             puzzleCells.Add(cellSpr);
         }
     }
+
+    public bool PieceListsMatch(List<PieceItem> piecesPlaced){
+        var check1 = levels[currLevel].pieceTypesReq.Except(piecesPlaced);
+        var check2 = piecesPlaced.Except(levels[currLevel].pieceTypesReq);
+        return !check1.Any() && !check2.Any();
+    }
 }
 
     public class Cell{
         public bool filled;
         public Vector2Int gridPos;
-        public int filledObjID;
-
+        public PieceItem piece;
         public Cell(Vector2Int pos){
             filled = false;
             gridPos = pos;
-            filledObjID = -1;
+            piece.size = PieceSize.None;
+            piece.type = PieceType.None;
         }
     }

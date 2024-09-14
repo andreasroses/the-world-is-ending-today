@@ -1,18 +1,20 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 public enum PieceType{
-    Radiation, Tornado, Earthquake, Strength
+    Radiation, Tornado, Earthquake, Strength, None
 }
 
 public enum PieceSize{
-    Low, High, ExtraHigh
+    Low, High, ExtraHigh, None
 }
 public class PuzzlePiece : MonoBehaviour , IBeginDragHandler, IDragHandler, IEndDragHandler
 {
+    [SerializeField] private RectTransform rectTransform;
     private PlacementSystem placeSys;
-    [SerializeField] private PieceData data;
+    public PieceData data;
     private Vector2Int pieceSize;
     [System.NonSerialized]
     public bool isPlaced = false;
@@ -32,6 +34,8 @@ public class PuzzlePiece : MonoBehaviour , IBeginDragHandler, IDragHandler, IEnd
     // Update is called once per frame
     void Update()
     {
+        UpdatePivot(GetPivotForRotation(transform.eulerAngles.z));
+
         
     }
 
@@ -43,31 +47,67 @@ public class PuzzlePiece : MonoBehaviour , IBeginDragHandler, IDragHandler, IEnd
     }
 
     public void OnDrag(PointerEventData eventData){
-        RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)placeSys.canvas.transform,eventData.position,placeSys.canvas.worldCamera, out newPosition);
-        transform.position = placeSys.canvas.transform.TransformPoint(newPosition);
+        if(!isPlaced){
+            RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)placeSys.canvas.transform,eventData.position,placeSys.canvas.worldCamera, out newPosition);
+            transform.position = placeSys.canvas.transform.TransformPoint(newPosition);
+        }
     }
 
     public void OnEndDrag(PointerEventData eventData){
-        placeSys.PlacePiece(pieceSize, transform.position);
+        if(!isPlaced){
+            placeSys.PlacePiece(data.pzlPiece, pieceSize);
+        }
         if(!isPlaced){
             transform.position = startPos;
+            transform.rotation = Quaternion.identity;
         }
         placeSys.SetHeldPiece(null);
+    }
+
+    private Vector2 GetPivotForRotation(float rotationAngle){
+    // Determine the pivot based on rotation
+    // Example logic for 90-degree rotations
+        if (Mathf.Abs(rotationAngle % 180) == 90)
+        {
+            return new Vector2(1, 0);  // For 90 or 270 degrees, pivot at bottom-right
+        }
+        return new Vector2(0, 0);    // For 0 or 180 degrees, pivot at bottom-left
+    }
+    private void UpdatePivot(Vector2 newPivot){
+        Vector2 size = rectTransform.rect.size;
+        
+        Vector2 oldPivot = rectTransform.pivot;
+        Vector2 offset = (oldPivot - newPivot) * size;
+        
+        rectTransform.pivot = newPivot;
+        
+        //rectTransform.anchoredPosition += offset;
     }
 }
 
 [System.Serializable]
 public struct PieceData{
-    public PieceType type;
-    public PieceSize size;
+    public PieceItem pzlPiece;
 
     public Vector2Int GetPieceSize(){
-        if(size == PieceSize.Low){
+        if(pzlPiece.size == PieceSize.Low){
             return Vector2Int.one;
         }
-        if(size == PieceSize.High){
+        if(pzlPiece.size == PieceSize.High){
             return new Vector2Int(1,2);
         }
         return new Vector2Int(2,2);
     }
+}
+
+[System.Serializable]
+public struct PieceItemQuantifier{
+    public PieceItem piece;
+    public int quantity;
+}
+
+[System.Serializable]
+public struct PieceItem{
+    public PieceSize size;
+    public PieceType type;
 }

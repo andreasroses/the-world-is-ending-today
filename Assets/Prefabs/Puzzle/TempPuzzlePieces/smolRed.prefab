@@ -88,4 +88,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27d5602df621a2c49a2977b41080fad7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pieceSize: {x: 1, y: 1}
+  rectTransform: {fileID: 1212317980167977914}
+  data:
+    pzlPiece:
+      size: 0
+      type: 0

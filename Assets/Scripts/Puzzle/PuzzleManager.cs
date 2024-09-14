@@ -1,39 +1,34 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.Pool;
 
 public class PuzzleManager : MonoBehaviour
 {
     [SerializeField] private Grid grid;
-    [SerializeField] private areaGridBuilder gridBuilder;
-    [SerializeField] private List<PuzzleLevel> levels = new List<PuzzleLevel>();
-    
+    [SerializeField] private AreaGridBuilder gridBuilder;
     private List<Cell> builtGrid = new List<Cell>();
-    private int filledCellsReq = 0;
-    void Awake()
-    {
-        filledCellsReq = levels[0].NumberFilledCellsRequired();
-    }
-    public void GeneratePuzzleFromGrid(){
+    
+    public void GeneratePuzzleFromGrid(int numReq){
         int numFilled = 0;
         builtGrid = gridBuilder.areaGrid;
         List<Cell> activeCells = new List<Cell>();
 
-        int startX = Random.Range(gridBuilder.minWidth, gridBuilder.maxWidth+1);
-        int startY = Random.Range(gridBuilder.minHeight, gridBuilder.maxHeight+1);
+        int startX = UnityEngine.Random.Range(gridBuilder.minWidth, gridBuilder.maxWidth+1);
+        int startY = UnityEngine.Random.Range(gridBuilder.minHeight, gridBuilder.maxHeight+1);
         
         Cell startCell = builtGrid.Find(puzzleCell => puzzleCell.gridPos == new Vector2Int(startX,startY));
         startCell.filled = true;
         activeCells.Add(startCell);
 
-        while(activeCells.Count > 0 && numFilled < filledCellsReq - 1){
+        while(activeCells.Count > 0 && numFilled < numReq - 1){
             Cell currCell = activeCells[activeCells.Count - 1];
 
             List<Cell> neighbors = GetUnvisitedNeighbors(currCell);
 
             if(neighbors.Count > 0){
-                Cell randomCell = neighbors[Random.Range(0, neighbors.Count)];
+                Cell randomCell = neighbors[UnityEngine.Random.Range(0, neighbors.Count)];
                 randomCell.filled = true;
                 activeCells.Add(randomCell);
                 numFilled++;
@@ -69,16 +64,36 @@ public class PuzzleManager : MonoBehaviour
 
 [System.Serializable]
 public struct PuzzleLevel{
-    public List<PieceData> requiredPieces;
-
+    public List<PieceItemQuantifier> requiredPieces;
+    [System.NonSerialized]
+    public List<PieceItem> pieceTypesReq;
     public int NumberFilledCellsRequired(){
         Vector2Int tmp;
         int sum = 0;
-        foreach(PieceData piece in requiredPieces){
-            tmp = piece.GetPieceSize();
-            sum += tmp.x * tmp.y;
+        foreach(PieceItemQuantifier item in requiredPieces){
+            tmp = getPieceSize(item.piece.size);
+            sum += tmp.x * tmp.y * item.quantity;
         }
         return sum;
+    }
+
+    private Vector2Int getPieceSize(PieceSize size){
+        if(size == PieceSize.Low){
+            return Vector2Int.one;
+        }
+        if(size == PieceSize.High){
+            return new Vector2Int(1,2);
+        }
+        return new Vector2Int(2,2);
+    }
+
+    public void CollectRequiredPieces(){
+        if(pieceTypesReq == null){
+            pieceTypesReq = new List<PieceItem>();
+        }
+        foreach(PieceItemQuantifier p in requiredPieces){
+            pieceTypesReq.AddRange(Enumerable.Repeat(p.piece, p.quantity));
+        }
     }
 }
 
