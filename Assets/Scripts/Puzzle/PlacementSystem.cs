@@ -32,9 +32,8 @@ public class PlacementSystem : MonoBehaviour
     [SerializeField] private areaGridBuilder gridBuilder;
     [SerializeField] private GameObject mouseIndicator, cellIndicator;
     [SerializeField] private GridInput gridInput;
-    [SerializeField] private ObjectsDatabase db;
     private int selectedObjIndex = -1;
-    [SerializeField] private GameObject gridVisual;
+    private List<PuzzlePiece> placedPieces = new();
     private PuzzlePiece currPiece;
     void Start(){
         //StopPlacement();
@@ -48,6 +47,7 @@ public class PlacementSystem : MonoBehaviour
             currPiece.isPlaced = true;
             Vector3 placePos = grid.CellToWorld(checkPos);
             currPiece.transform.position = placePos;
+            placedPieces.Add(currPiece);
         }
     }
 

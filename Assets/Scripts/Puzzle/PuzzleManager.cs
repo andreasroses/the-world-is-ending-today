@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
 
-public class GeneratePuzzle : MonoBehaviour
+public class PuzzleManager : MonoBehaviour
 {
     [SerializeField] private Grid grid;
     [SerializeField] private areaGridBuilder gridBuilder;
@@ -69,12 +69,16 @@ public class GeneratePuzzle : MonoBehaviour
 
 [System.Serializable]
 public struct PuzzleLevel{
-    public int numBig;
-    public int numSmallBlue;
-    public int numSmallRed;
+    public List<PieceData> requiredPieces;
 
     public int NumberFilledCellsRequired(){
-        return (numBig*2) + numSmallBlue + numSmallRed;
+        Vector2Int tmp;
+        int sum = 0;
+        foreach(PieceData piece in requiredPieces){
+            tmp = piece.GetPieceSize();
+            sum += tmp.x * tmp.y;
+        }
+        return sum;
     }
 }
 

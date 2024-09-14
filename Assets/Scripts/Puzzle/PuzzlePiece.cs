@@ -2,10 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+public enum PieceType{
+    Radiation, Tornado, Earthquake, Strength
+}
+
+public enum PieceSize{
+    Low, High, ExtraHigh
+}
 public class PuzzlePiece : MonoBehaviour , IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     private PlacementSystem placeSys;
-    [SerializeField] private Vector2Int pieceSize;
+    [SerializeField] private PieceData data;
+    private Vector2Int pieceSize;
     [System.NonSerialized]
     public bool isPlaced = false;
     private Vector3 startPos;
@@ -15,6 +23,7 @@ public class PuzzlePiece : MonoBehaviour , IBeginDragHandler, IDragHandler, IEnd
     void OnEnable()
     {
         placeSys = GameObject.FindGameObjectWithTag("PlacementSystem").GetComponent<PlacementSystem>();
+        pieceSize = data.GetPieceSize();
     }
 
     void Start(){
@@ -44,5 +53,21 @@ public class PuzzlePiece : MonoBehaviour , IBeginDragHandler, IDragHandler, IEnd
             transform.position = startPos;
         }
         placeSys.SetHeldPiece(null);
+    }
+}
+
+[System.Serializable]
+public struct PieceData{
+    public PieceType type;
+    public PieceSize size;
+
+    public Vector2Int GetPieceSize(){
+        if(size == PieceSize.Low){
+            return Vector2Int.one;
+        }
+        if(size == PieceSize.High){
+            return new Vector2Int(1,2);
+        }
+        return new Vector2Int(2,2);
     }
 }
