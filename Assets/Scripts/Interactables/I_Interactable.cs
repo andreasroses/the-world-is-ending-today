@@ -5,6 +5,10 @@ using UnityEngine;
 public interface I_Interactable
 {
     public void Interact(PlayerManager player);
+
+    public Transform GetTransform();
+
+    public string GetInteractText();
 }
 
 public interface I_DialogueInitiator
