@@ -100,15 +100,12 @@ public class AreaGridBuilder : MonoBehaviour
         return false;
     }
     private Vector2Int AdjustSizeForRotation(Vector2Int size, float rotationAngle){
-        // Normalize the rotation to a 0, 90, 180, 270 range
         rotationAngle = rotationAngle % 360;
 
-        // Swap width and height for 90° or 270° rotations
         if(rotationAngle == 90 || rotationAngle == 270){
             return new Vector2Int(size.y, size.x);
         }
 
-        // No adjustment for 0° or 180° rotations
         return size;
     }
     private bool isValidCellPosition(Vector2Int cellPos){

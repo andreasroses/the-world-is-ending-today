@@ -71,8 +71,6 @@ public class PlacementSystem : MonoBehaviour
     }
 
     private Vector2 GetPivotForRotation(float rotationAngle){
-    // Determine the pivot based on rotation
-    // Example logic for 90-degree rotations
         if (Mathf.Abs(rotationAngle % 180) == 90)
         {
             return new Vector2(1, 0);  // For 90 or 270 degrees, pivot at bottom-right

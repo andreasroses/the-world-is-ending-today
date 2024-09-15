@@ -4266,23 +4266,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfbc9049bb35f1a4f8bc35206ed22b4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  piecesOwned:
-  - piece:
-      size: 0
-      type: 0
-    quantity: 0
-  - piece:
-      size: 0
-      type: 0
-    quantity: 0
-  - piece:
-      size: 0
-      type: 0
-    quantity: 0
-  - piece:
-      size: 0
-      type: 0
-    quantity: 0
+  piecesOwned: []
 --- !u!4 &2127092963
 Transform:
   m_ObjectHideFlags: 0
