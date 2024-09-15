@@ -13,6 +13,8 @@ public class ThirdPersonPlayerController : MonoBehaviour
     [SerializeField] private float rotationSpeed;
     [SerializeField] private float moveSpeed;
     [SerializeField] private Animator anim;
+    [SerializeField] private float interactRange = 2f;
+    [SerializeField] private LayerMask interactMask;
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -51,8 +53,7 @@ public class ThirdPersonPlayerController : MonoBehaviour
 
     public I_Interactable GetInteractableObject() {
         List<I_Interactable> interactableList = new List<I_Interactable>();
-        float interactRange = 3f;
-        Collider[] colliderArray = Physics.OverlapSphere(transform.position, interactRange);
+        Collider[] colliderArray = Physics.OverlapSphere(transform.position, interactRange, interactMask);
         foreach (Collider collider in colliderArray) {
             if (collider.TryGetComponent(out I_Interactable interactable)) {
                 interactableList.Add(interactable);

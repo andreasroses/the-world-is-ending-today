@@ -83,6 +83,10 @@ MonoBehaviour:
   rotationSpeed: 5
   moveSpeed: 1.5
   anim: {fileID: 7004506288128566184}
+  interactRange: 1.5
+  interactMask:
+    serializedVersion: 2
+    m_Bits: 512
 --- !u!114 &7046283945523311939
 MonoBehaviour:
   m_ObjectHideFlags: 0

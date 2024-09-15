@@ -13,7 +13,7 @@ public class DoorInteractable : MonoBehaviour, I_Interactable {
 
     public void ToggleDoor() {
         isOpen = !isOpen;
-        animator.SetBool("IsOpen", isOpen);
+        animator.SetBool("isOpen", isOpen);
     }
 
     public void Interact(PlayerManager player) {
